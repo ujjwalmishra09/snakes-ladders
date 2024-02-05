@@ -18,8 +18,8 @@ onMounted(() => {
     position: relative;
 }
 .game-container {
-    max-width: 450px;
-    max-height: 500px;
+    width: 450px;
+    height: 500px;
     position: relative;
 }
 
