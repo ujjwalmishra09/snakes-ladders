@@ -45,7 +45,11 @@ export default defineStore("game", () => {
       playerMoves: {
         1: [1],
       },
-      loading: false
+      rolling: false,
+      playing: false,
+      diceValue: 1,
+      started: false,
+      lastMove: null
     };
   };
 
@@ -74,33 +78,50 @@ export default defineStore("game", () => {
 
 
   const positionCoin = (currentCell: number) => {
-    console.log(currentCell)
     const columns = 9;
     const cellWidth = 450 / columns; // Width of each cell
-    const cellHeight = 500 / 12; // Height of each cell
+    const cellHeight = 480 / 12; // Height of each cell
 
     const column = (currentCell - 1) % columns;
     const row = Math.floor((currentCell - 1) / columns);
 
-    const coin = document.querySelector('#coin');
+    const coin = document.querySelector('#board-coin');
     if (coin?.style) {
         if ((row+1) % 2 === 0) {
-            coin.style.left = (450 - ((column * cellWidth) + 45) )+ 'px';
+            coin.style.left = (450 - ((column * cellWidth) + 40) )+ 'px';
         } else {
-            coin.style.left = ((column * cellWidth) + 9)+ 'px';
+            coin.style.left = ((column * cellWidth) + 10)+ 'px';
         }
-        coin.style.bottom = ((row * cellHeight) + 9) +  'px';
+        coin.style.bottom = ((row * cellHeight) + 5) +  'px';
     }
 }
-const rollDice = () => {
-    if (state.value.loading) return 
+
+const rollDice = async () => {
+    const lastMove = {};
+    if (state.value.rolling) return 
+    if (!state.value.started) {
+      start()
+    }
     const randomNo = Math.floor(Math.random() * 6) + 1
-    positionCoin(getCurrentCell(1) + randomNo)
-    play({ 1: [randomNo]})
-    state.value.loading = true;
+    state.value.diceValue = randomNo;
+    state.value.rolling = true;
+    state.value.playing = true;
     setTimeout(() => {
-        positionCoin(getCurrentCell(1))
-        state.value.loading = false
+      state.value.rolling = false
+      setTimeout(() => {
+        lastMove.lastPos = getCurrentCell(1);
+        positionCoin(getCurrentCell(1) + randomNo)
+        state.value.started = true;
+        setTimeout(() => {
+          play({ 1: [randomNo]})
+          positionCoin(getCurrentCell(1))
+          lastMove.currentPos = getCurrentCell(1)
+          lastMove.isSnake = lastMove.currentPos < (lastMove.lastPos + randomNo)
+          lastMove.isLadder = lastMove.currentPos > (lastMove.lastPos + randomNo)
+          state.value.lastMove = lastMove
+          state.value.playing = false;
+        }, 1000)
+      }, 500)
     }, 3000)
 }
 
