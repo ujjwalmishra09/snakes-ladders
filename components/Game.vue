@@ -24,10 +24,10 @@ const onImgClick = (e) => {
   const { row, column } = identifyBox(e)
   let boardIndex = 0
   if ( row % 2 === 0) {
-    tooltip.value.left = 450 - ((9 - column) * 50) - 25
+    tooltip.value.left = 450 - ((9 - column) * 50)
     boardIndex = ((row - 1) * 9) + (10 - column)
   } else {
-    tooltip.value.left = ((column) * 50) - 25
+    tooltip.value.left = ((column) * 50)
     boardIndex = ((row -1) * 9) + column
   }
 
